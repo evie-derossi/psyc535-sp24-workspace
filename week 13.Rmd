@@ -1,0 +1,59 @@
+---
+title: "week 13"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+```
+
+```{r beavers practice}
+data(beavers)
+
+# making new columns
+beaver1$ID <- 1
+beaver2$ID <- 2
+
+
+#need to avg outcome values per beaver (participant) per day (condition)
+
+
+# import tidyverse
+
+summary_b1 <- beaver1 %>% group_by(day) %>% summarize(avg_temp = mean(temp), activ_n = sum(activ))
+print(summary_b1)
+
+summary_b2 <- beaver2 %>% group_by(day) %>% summarize(avg_temp = mean(temp), activ_n = sum(activ))
+print(summary_b2)
+
+```
+
+
+```{r}
+library(car) #needed for anova
+
+```
+
+
+```{r}
+subject <- 1:12
+dose <- c("Placebo","Placebo","Placebo","Placebo", "LD", "LD","LD","LD", "HD", "HD", "HD", "HD")
+O2_levels <- c(3.23, 2.13, 1.42, 1.9, 5.09, 2.4, 4.64, 2.98, 7.43, 4.89, 5.38, 3.84)
+
+dose_df <- data.frame(subj = subject, dose = dose, o2 = O2_levels)
+
+dose_aov <- aov(o2 ~ dose, dose_df)
+summary(dose_aov)
+```
+
+```{r pairwise comparisons}
+pairwise.t.test(dose_df$o2, dose_df$dose, paired = FALSE, p.adjust.method = "BH")
+
+
+#get mean values using summarize
+dose_df %>% group_by(dose) %>% summarize(avg = mean(o2))
+
+```
+
+
+
+

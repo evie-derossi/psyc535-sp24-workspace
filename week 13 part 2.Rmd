@@ -1,0 +1,31 @@
+---
+title: "week 13 pt 2"
+output: html_notebook
+---
+
+```{r load libraries}
+library(tidyverse)
+library(ez)
+```
+
+```{r gl}
+cond <- gl (3, 1, 12, labels = c("congruent", "incongruent", "ctrl"))
+subj <- gl(4,3,12, labels = c(1,2,3,4))
+rt <- c(.345, 1.245, .903, .530, .923, .829, .645, .845, 1.176, .326, 1.543, 1.165)
+
+congruency_df <- data.frame(participants = subj, condition = cond, responsetime = rt)
+print(congruency_df)
+
+```
+
+```{r run ezANOVA}
+congruent_model <- ezANOVA(congruency_df, dv = responsetime, wid = participants, within = condition)
+print(congruent_model)
+```
+
+```{r pairwise tests}
+pairwise.t.test(congruency_df$responsetime, congruency_df$condition, p.adjust.method = "BH", paired = TRUE)
+
+congruency_df %>% group_by(condition) %>% summarize(avg_rt = mean(responsetime))
+
+```

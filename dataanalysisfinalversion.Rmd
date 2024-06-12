@@ -1,0 +1,101 @@
+---
+title: "data analysis"
+name: Imagene Cooke and Evie De Rossi 
+output: html_notebook
+---
+
+
+```{r importing libraries}
+library(ez)
+library(car)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+```
+```{r importing in all csvs}
+getwd()
+setwd("~/Desktop")
+file.exists("25psyc535experiment.csv")
+file.exists("036psyc535experiment.csv")
+file.exists("44psyc535experiment.csv")
+file.exists("071psyc535experiment.csv")
+#file.exists("324psyc535experiment.csv")
+file.exists("413psyc535experiment.csv")
+file.exists("877psyc535experiment.csv")
+
+file1 <- read.csv("25psyc535experiment.csv", header = TRUE)
+file2 <- read.csv("036psyc535experiment.csv", header = TRUE)
+file3 <- read.csv("44psyc535experiment.csv", header = TRUE)
+file4 <- read.csv("071psyc535experiment.csv", header = TRUE)
+#file5 <- read.csv("324psyc535experiment.csv", header = TRUE)
+file6 <- read.csv("413psyc535experiment.csv", header = TRUE)
+file7 <- read.csv("877psyc535experiment.csv", header = TRUE)
+
+```
+
+```{r combining all files to one df}
+total <- bind_rows(file1, file2, file3,file4, file6, file7 )
+
+total$Incorrect <- with(total, (Stimulus == "go" & Response == "") | (Stimulus == "no go" & Response == "x"))
+total$Rt <- as.numeric(total$RT) 
+total <- total %>% filter(!is.na(Rt))
+print(total)
+
+```
+
+```{r filtering out responses by time}
+toofast <- 0.2
+tooslow <- 2.0
+filteredData <- total %>%filter(toofast < Rt, Rt < tooslow)
+print(filteredData)
+
+
+```
+
+```{r create data frame consisting of 4 lines per participant}
+
+averagedData <- filteredData %>% group_by(Participant.,Section) %>% summarize(avgRT = mean(Rt))                         
+print(averagedData)       
+```
+```{r calculate errors made by each particpant in each section}
+incorrectCount <- filteredData %>% group_by(Participant., Section) %>% summarize(Errors = sum(Incorrect == TRUE)) %>%  arrange(Participant., Section)
+print(incorrectCount)
+
+```
+```{r combine dataframes}
+combinedData <- left_join(averagedData, incorrectCount, by = c("Participant.", "Section"))
+combinedData$Section <- factor(combinedData$Section)
+combinedData$Section <- as.character(combinedData$Section)
+print(combinedData)
+```
+
+```{r label as unrewarded and rewarded}
+
+combinedData$Section[combinedData$Section == "section 1"] <- "Unrewarded"
+combinedData$Section[combinedData$Section == "section 2"] <- "Unrewarded"
+combinedData$Section[combinedData$Section == "section 3"] <- "Rewarded"
+combinedData$Section[combinedData$Section == "section 4"] <- "Rewarded"
+
+print(combinedData)
+
+```
+
+
+```{r t.test to compare error of unrewarded to rewarded}
+
+unrewardE <- combinedData$Errors[combinedData$Section == "Unrewarded"]
+rewardE <- combinedData$Errors[combinedData$Section == "Rewarded"]
+tTestR <- t.test(unrewardE, rewardE, paired = TRUE)
+print(tTestR)
+
+# display number of errors in each group, possibly bar chart?
+```
+The results above suggest a significant difference between the errors made in unrewarded as compared to rewarded trials. However, this does not tell us whether more were made in a particular section. 
+```{r Rt to Go in rewarded sections vs non reward }
+unrewardedRt <-combinedData$avgRT[combinedData$Section == "Unrewarded"]
+rewardedRt <-combinedData$avgRT[combinedData$Section == "Rewarded"]
+tTestRt <- t.test(unrewardedRt, rewardedRt, paired = TRUE)
+print(tTestRt)
+
+```
+The results above suggest that there is not a significant difference in reaction time for "Go" stimuli in rewarded and unrewarded sections.

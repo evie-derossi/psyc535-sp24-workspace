@@ -1,0 +1,115 @@
+---
+title: "week_14"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+print(mpg)
+str(mpg)
+```
+
+```{r}
+p <- ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class))
+
+p <- p + geom_point()
+
+plot(p)
+
+```
+
+
+```{r installing gapminder}
+install.packages("gapminder")
+library(gapminder)
+str(gapminder)
+```
+
+
+```{r practice problem 1}
+gap_p <- ggplot(data = gapminder, mapping = aes(x = lifeExp, y = gdpPercap, color = "red"))
+
+gap_p <- gap_p + geom_point() + geom_smooth(color = "blue")
+
+gap_p <- gap_p + xlab("life expectancy") + ylab("GDP per capita")
+
+plot(gap_p)
+
+```
+
+
+```{r more mpg stuff}
+mpg$displ <- factor(mpg$displ)
+mpg$manufacturer <- factor(mpg$manufacturer)
+
+p <- ggplot(mpg, aes(x = manufacturer, y = hwy))
+p <- p + stat_summary()
+plot(p)
+
+
+
+#option 1 --> create a new data fram and use summarize
+summed_data <- summarize(group_by(mpg, manufacturer), avg = mean(hwy))
+summed_data
+
+p<- ggplot(summed_data, aes(manufacturer, avg)) + geom_col()
+plot(p)
+
+
+#option 2
+p <- ggplot(mpg, aes (x= manufacturer, y = hwy))
+p <- p + stat_summary(fun = "mean", geom = "bar")
+plot(p)
+
+str(mpg)
+```
+
+
+```{r practice problem 2}
+
+gap_p <- ggplot(data = gapminder, mapping = aes(x = lifeExp, y = continent))
+
+gap_p <- gap_p + stat_summary(fun = "mean", geom = "bar")
+
+gap_p <- gap_p + xlab("life expectancy") + ylab("continent")
+
+plot(gap_p)
+
+w
+
+
+
+```
+
+
+
+```{r audi vs honda}
+hondadf <- mpg[mpg$manufacturer == "honda", ]
+audidf <- mpg[mpg$manufacturer == "audi", ]
+
+#combine the dfs
+new <- bind_rows(hondadf, audidf)
+avgctydf <- new %>% group_by(manufacturer) %>% summarize(avg = mean(cty))
+avgctydf
+
+p <- ggplot(avgctydf, aes(x = manufacturer, y = avg)) + geom_col()
+plot(p)
+
+```
+
+
+
+```{r option 2 (quicker wat)}
+
+filterdf <- mpg[(mpg$manufacturer == "honda") | (mpg$manufacturer == "audi"), ]
+filterdf
+
+newp <- filterdf %>% ggplot(aes(x = manufacturer, y = cty, fill = manufacturer)) + stat_summary(fun = "mean", geom = "bar")
+newp
+```
+
+
+
+
+

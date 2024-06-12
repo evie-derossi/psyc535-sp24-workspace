@@ -1,0 +1,54 @@
+---
+title: "week_11"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r Practice Problem 1}
+my_vec <- c(1,3,4,5,10)
+for (idx in c(1:5)){
+  my_vec[idx] <- my_vec[idx] +5
+}
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+#Data Frames
+```{r creating a data frame}
+part_names <- c("Ellen", "Ari", "Mark", "Yumi")
+pizza <- c(3,6,2,5)
+df <- data.frame(name = part_names, slices = pizza)
+
+df$slices*2
+paste("kid", df$name)
+df$leftovers<-df$slices*2
+
+
+print(df)
+```
+# Practice Problem 2
+```{r practice problem 2}
+participant <- 1:5
+rewarded <- c(650,743,429,608,588)
+unrewarded <- c(728,834,503,829, 595)
+
+reward_df <- data.frame(part = participant, reward = rewarded, unreward = unrewarded)
+reward_df
+
+reward_df$difference <- reward_df$unreward - reward_df$reward
+reward_df
+
+
+
+
+
+
+
+```
